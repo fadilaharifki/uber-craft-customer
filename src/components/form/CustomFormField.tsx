@@ -12,7 +12,14 @@ interface CustomFormFieldProps<T extends FieldValues> {
   control: Control<T>;
   label: string;
   labelRequired?: boolean;
-  type?: "text" | "number" | "date" | "currency" | "select" | "email";
+  type?:
+    | "text"
+    | "number"
+    | "date"
+    | "currency"
+    | "select"
+    | "email"
+    | "password";
   options?: { label: string; value: string | number }[];
   placeholder?: string;
   prefix?: string;
@@ -52,7 +59,7 @@ const CustomFormField = <T extends FieldValues>({
         <div
           className={clsx(
             "flex flex-col flex-1",
-            fieldState.error ? "mb-0" : "mb-6",
+            fieldState.error ? "mb-2" : "mb-7",
             className
           )}
         >
