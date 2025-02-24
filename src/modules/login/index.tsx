@@ -16,6 +16,7 @@ import { z } from "zod";
 import CustomFormField from "@/components/form/CustomFormField";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/AuthStore";
 
 const formSchema = z.object({
   email: z
@@ -30,6 +31,8 @@ type FormValues = z.infer<typeof formSchema>;
 const LoginPageModules = () => {
   const router = useRouter();
 
+  const { setEmail } = useAuthStore();
+
   const { handleSubmit, control } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,7 +42,8 @@ const LoginPageModules = () => {
   });
 
   const onSubmit = (e: FormValues) => {
-    console.log(e);
+    setEmail(e.email);
+    router.push("/verification");
   };
 
   return (
@@ -58,7 +62,7 @@ const LoginPageModules = () => {
           left: 0,
           width: "100%",
           height: "100%",
-          backgroundImage: "url('/assets/images/image-aircraft.jpg')",
+          backgroundImage: "url('/assets/images/image-aircraft.webp')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           transform: "scaleX(-1)",
@@ -141,7 +145,12 @@ const LoginPageModules = () => {
                 <Typography variant="body2">Remember me</Typography>
               </Box>
 
-              <div className="hidden md:flex">
+              <div
+                className="hidden md:flex"
+                onClick={() => {
+                  router.push("/forgot-password");
+                }}
+              >
                 <Typography
                   variant="body2"
                   color="primary"
@@ -162,7 +171,12 @@ const LoginPageModules = () => {
             >
               Sign in
             </Button>
-            <div className="md:hidden flex pt-5">
+            <div
+              className="md:hidden flex pt-5"
+              onClick={() => {
+                router.push("/forgot-password");
+              }}
+            >
               <Typography
                 variant="body2"
                 color="primary"

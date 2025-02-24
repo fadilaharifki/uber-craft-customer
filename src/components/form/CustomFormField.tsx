@@ -8,8 +8,8 @@ import TextInput from "./TextInput";
 import CurrencyInput from "./CurrencyInput";
 import SelectInput from "./SelectInput";
 import DateInput, { DateFormat } from "./DateInput";
-import PhoneNumberInput from "./PhoneNumberInput";
 import AvatarUpload from "./AvatarUpload";
+import PhoneNumberInput from "./PhoneNumberInput";
 
 interface CustomFormFieldProps<T extends FieldValues> {
   name: Path<T>;

@@ -8,7 +8,8 @@ import { z } from "zod";
 import CustomFormField from "@/components/form/CustomFormField";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import AvatarUpload from "@/components/form/AvatarUpload";
+import { useRouter } from "next/navigation";
+import ButtonBack from "@/components/ButtonBack";
 
 const formSchema = z.object({
   first_name: z.string().min(1, "First Name cannot be empty"),
@@ -45,6 +46,8 @@ const bankCodes = [
 ];
 
 const RegisterPageModules = () => {
+  const router = useRouter();
+
   const [activeStep, setActiveStep] = useState(0);
   const { handleSubmit, control } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -53,7 +56,7 @@ const RegisterPageModules = () => {
       last_name: "",
       email: "",
       address: "",
-      phone_number: "",
+      phone_number: "+62",
     },
   });
 
@@ -170,8 +173,10 @@ const RegisterPageModules = () => {
   };
 
   return (
-    <Container className="flex flex-col">
-      <div className="flex flex-col w-full md:px-20 py-10">
+    <Container className="flex flex-col py-5">
+      <ButtonBack title="Register" />
+
+      <div className="flex flex-col w-full">
         <div>
           <Stepper activeStep={activeStep} alternativeLabel>
             {steps.map((label) => (
@@ -194,7 +199,7 @@ const RegisterPageModules = () => {
         </Container>
         {StepperScreen(activeStep)}
       </div>
-      <Container className="md:fixed bottom-2 md:bottom-16 w-full flex justify-between pb-10 md:py-10">
+      <Container className="md:fixed bottom-2 md:bottom-0 w-full flex justify-between pb-10 md:py-10">
         <div>
           <AnimatePresence mode="wait">
             {activeStep > 0 && (
