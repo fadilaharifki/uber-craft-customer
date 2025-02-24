@@ -1,3 +1,5 @@
+"use client";
+
 import { BaseFieldProps } from "@/interface/BaseInterface";
 import {
   IconButton,

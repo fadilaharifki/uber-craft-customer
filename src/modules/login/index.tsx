@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import CustomFormField from "@/components/form/CustomFormField";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z
@@ -27,6 +28,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const LoginPageModules = () => {
+  const router = useRouter();
+
   const { handleSubmit, control } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -171,7 +174,12 @@ const LoginPageModules = () => {
 
             <Typography textAlign="center" mt={2} variant="body2">
               Don’t have an account?{" "}
-              <span className="text-blue-500 font-bold cursor-pointer">
+              <span
+                onClick={() => {
+                  router.push("/register");
+                }}
+                className="text-blue-500 font-bold cursor-pointer"
+              >
                 Create
               </span>
             </Typography>

@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Controller, Control, FieldValues, Path } from "react-hook-form";
 import { InputLabel, SxProps, TextFieldProps } from "@mui/material";
@@ -6,6 +8,8 @@ import TextInput from "./TextInput";
 import CurrencyInput from "./CurrencyInput";
 import SelectInput from "./SelectInput";
 import DateInput, { DateFormat } from "./DateInput";
+import PhoneNumberInput from "./PhoneNumberInput";
+import AvatarUpload from "./AvatarUpload";
 
 interface CustomFormFieldProps<T extends FieldValues> {
   name: Path<T>;
@@ -19,7 +23,9 @@ interface CustomFormFieldProps<T extends FieldValues> {
     | "currency"
     | "select"
     | "email"
-    | "password";
+    | "password"
+    | "phone_number"
+    | "avatar";
   options?: { label: string; value: string | number }[];
   placeholder?: string;
   prefix?: string;
@@ -85,6 +91,17 @@ const CustomFormField = <T extends FieldValues>({
               slotPropsInput={slotPropsInput}
               label={!labelOutside ? label : ""}
             />
+          ) : type === "phone_number" ? (
+            <PhoneNumberInput
+              field={field}
+              fieldState={fieldState}
+              placeholder={placeholder}
+              size={size}
+              sx={sx}
+              classNameField={classNameField}
+              slotPropsInput={slotPropsInput}
+              label={!labelOutside ? label : ""}
+            />
           ) : type === "select" ? (
             <SelectInput
               field={field}
@@ -106,6 +123,13 @@ const CustomFormField = <T extends FieldValues>({
               classNameField={classNameField}
               label={!labelOutside ? label : ""}
               dateIcon={dateIcon}
+            />
+          ) : type === "avatar" ? (
+            <AvatarUpload
+              field={field}
+              fieldState={fieldState}
+              sx={sx}
+              classNameField={classNameField}
             />
           ) : (
             <TextInput

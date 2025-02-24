@@ -19,6 +19,8 @@
     "@mui/x-date-pickers": "^7.27.0",
     "dayjs": "^1.11.13",
     "framer-motion": "^12.4.7",
+    "i18n-iso-countries": "^7.14.0",
+    "libphonenumber-js": "^1.11.20",
     "next": "15.1.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -1,9 +1,5 @@
-import Form from "@/components/form/Form";
+import LoginPage from "./login/page";
 
 export default function Home() {
-  return (
-    <div className="">
-      <Form />
-    </div>
-  );
+  return <LoginPage />;
 }

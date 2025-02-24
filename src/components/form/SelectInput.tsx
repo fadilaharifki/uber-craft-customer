@@ -1,3 +1,5 @@
+"use client";
+
 import { Autocomplete, TextField, TextFieldProps } from "@mui/material";
 import { ExpandMoreRounded } from "@mui/icons-material";
 import { BaseFieldProps } from "@/interface/BaseInterface";
@@ -31,9 +33,11 @@ const SelectInput = <T extends FieldValues>({
     fullWidth
     className={clsx(classNameField)}
     options={options}
-    value={options.find((option) => option.value === field.value) || null}
+    value={options.find((option) => option.value === field?.value) || null}
     popupIcon={<ExpandMoreRounded />}
-    onChange={(_, value) => field.onChange(value?.value ?? undefined)}
+    onChange={(_, value) => {
+      field.onChange(value?.value ?? "");
+    }}
     isOptionEqualToValue={(option, value) => option.value === value.value}
     getOptionLabel={(option) => option.label}
     renderInput={(params) => (
@@ -45,8 +49,8 @@ const SelectInput = <T extends FieldValues>({
           ...slotPropsInput,
         }}
         fullWidth
-        error={!!fieldState.error}
-        helperText={fieldState.error?.message}
+        error={!!fieldState?.error}
+        helperText={fieldState?.error?.message}
         placeholder={placeholder}
         size={size}
         sx={sx}
