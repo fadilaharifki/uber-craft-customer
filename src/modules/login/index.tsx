@@ -66,8 +66,8 @@ const LoginPageModules = () => {
         },
       }}
     >
-      <Container maxWidth="xl" className="grid grid-cols-2">
-        <Container className="flex flex-col w-full justify-end py-20 gap-4">
+      <Container maxWidth="xl" className="grid grid-cols-1 md:grid-cols-2">
+        <Container className="hidden md:flex flex-col w-full justify-end py-20 gap-4">
           <motion.p
             className="text-5xl font-extrabold text-white bg-clip-text"
             initial={{ opacity: 0, y: 30 }}
@@ -86,9 +86,9 @@ const LoginPageModules = () => {
             Exclusive Private Jet Charter for Your Ultimate Freedom.
           </motion.p>
         </Container>
-        <Container className="flex justify-end w-full">
+        <div className="flex md:justify-end w-full">
           <Paper
-            className="p-10 w-3/4 h-[80vh]"
+            className="py-5 md:py-10 px-5 md:p-10 md:w-3/4 w-full h-[90vh] md:h-[80vh]"
             sx={{ borderRadius: 5 }}
             elevation={6}
           >
@@ -107,7 +107,7 @@ const LoginPageModules = () => {
             >
               Sign in to your account
             </Typography>
-            <div className="flex flex-col py-10 ">
+            <div className="flex flex-col pt-10 ">
               <CustomFormField
                 labelOutside={false}
                 name="email"
@@ -132,21 +132,24 @@ const LoginPageModules = () => {
             </div>
             <Box
               display="flex"
+              className="my-2"
               justifyContent="space-between"
               alignItems="center"
-              className="my-2"
             >
               <Box display="flex" alignItems="center">
                 <Checkbox color="primary" />
                 <Typography variant="body2">Remember me</Typography>
               </Box>
-              <Typography
-                variant="body2"
-                color="primary"
-                sx={{ cursor: "pointer" }}
-              >
-                Forgot password?
-              </Typography>
+
+              <div className="hidden md:flex">
+                <Typography
+                  variant="body2"
+                  color="primary"
+                  sx={{ cursor: "pointer" }}
+                >
+                  Forgot password?
+                </Typography>
+              </div>
             </Box>
 
             <Button
@@ -159,6 +162,15 @@ const LoginPageModules = () => {
             >
               Sign in
             </Button>
+            <div className="md:hidden flex pt-5">
+              <Typography
+                variant="body2"
+                color="primary"
+                sx={{ cursor: "pointer" }}
+              >
+                Forgot password?
+              </Typography>
+            </div>
 
             <Box display="flex" justifyContent="center" mt={3} gap={2}>
               <IconButton>
@@ -184,7 +196,7 @@ const LoginPageModules = () => {
               </span>
             </Typography>
           </Paper>
-        </Container>
+        </div>
       </Container>
     </Box>
   );

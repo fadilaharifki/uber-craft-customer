@@ -79,7 +79,7 @@ const RegisterPageModules = () => {
 
   const Step1 = () => {
     return (
-      <Container className="grid grid-cols-2 gap-x-10">
+      <Container className="grid grid-cols-1 md:grid-cols-2 gap-x-10">
         <CustomFormField
           name="first_name"
           control={control}
@@ -128,7 +128,7 @@ const RegisterPageModules = () => {
 
   const Step2 = () => {
     return (
-      <Container className="grid grid-cols-2 gap-x-10">
+      <Container className="grid grid-cols-1 md:grid-cols-2 gap-x-10">
         <CustomFormField
           name="bank_code"
           control={controlBankInfo}
@@ -170,9 +170,9 @@ const RegisterPageModules = () => {
   };
 
   return (
-    <Container className="flex">
-      <Container className="flex flex-col w-full px-20 py-10">
-        <Container>
+    <Container className="flex flex-col">
+      <div className="flex flex-col w-full md:px-20 py-10">
+        <div>
           <Stepper activeStep={activeStep} alternativeLabel>
             {steps.map((label) => (
               <Step key={label}>
@@ -180,7 +180,7 @@ const RegisterPageModules = () => {
               </Step>
             ))}
           </Stepper>
-        </Container>
+        </div>
         <Container className="flex justify-center py-5">
           <CustomFormField
             name="avatar"
@@ -189,12 +189,12 @@ const RegisterPageModules = () => {
             label="Avatar"
             type="avatar"
             labelRequired
-            size="medium"
+            size="small"
           />
         </Container>
         {StepperScreen(activeStep)}
-      </Container>
-      <Container className="fixed bottom-16 w-full flex justify-between pt-10">
+      </div>
+      <Container className="md:fixed bottom-2 md:bottom-16 w-full flex justify-between pb-10 md:py-10">
         <div>
           <AnimatePresence mode="wait">
             {activeStep > 0 && (

@@ -1,7 +1,7 @@
 "use client";
 
 import { BaseFieldProps } from "@/interface/BaseInterface";
-import { Avatar, IconButton } from "@mui/material";
+import { Avatar } from "@mui/material";
 import type React from "react";
 import { useState, useRef } from "react";
 import { FieldValues } from "react-hook-form";
@@ -48,7 +48,7 @@ const AvatarUpload = <T extends FieldValues>({
         />
         <div className="absolute bottom-0 right-3">
           <div
-            className="bg-blue-500 rounded-full p-1 cursor-pointer hover:bg-blue-600"
+            className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-r hover:from-cyan-700 hover:to-blue-800 rounded-full p-1 cursor-pointer"
             onClick={handleUploadClick}
           >
             <EditOutlined className="text-white" />
