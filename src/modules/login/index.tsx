@@ -17,6 +17,7 @@ import CustomFormField from "@/components/form/CustomFormField";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/AuthStore";
+import ButtonBack from "@/components/ButtonBack";
 
 const formSchema = z.object({
   email: z
@@ -96,6 +97,8 @@ const LoginPageModules = () => {
             sx={{ borderRadius: 5 }}
             elevation={6}
           >
+            <ButtonBack title="Login" />
+
             <Typography
               variant="h4"
               fontWeight="bold"
