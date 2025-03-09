@@ -2,6 +2,7 @@
 
 import LayoutComponent from "@/components/Layout";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import useToast from "@/hooks/useToast";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -17,6 +18,8 @@ const aircraftOptions = [
 ];
 
 const HomePageModules = () => {
+  const { showToast } = useToast();
+
   const [selectedOption, setSelectedOption] = useState(aircraftOptions[0]);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isSmallScreen = useMediaQuery("(max-width: 1024px)");
@@ -201,7 +204,15 @@ const HomePageModules = () => {
                   left: `calc(50% + ${x}px)`,
                   top: `calc(50% + ${y}px)`,
                 }}
-                onClick={() => setSelectedOption(option)}
+                onClick={() => {
+                  console.log(option.name !== "Private Jet");
+
+                  if (option.name !== "Private Jet") {
+                    showToast("Under Development", "info");
+                  } else {
+                    setSelectedOption(option);
+                  }
+                }}
               >
                 {option.name}
               </button>

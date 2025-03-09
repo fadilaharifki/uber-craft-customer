@@ -5,6 +5,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import "./globals.css";
 import theme from "@/theme";
 import { CssBaseline } from "@mui/material";
+import { Toaster } from "sonner";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -29,6 +30,7 @@ export default function RootLayout({
           <ThemeProvider theme={theme}>
             <CssBaseline />
             {children}
+            <Toaster />
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>
