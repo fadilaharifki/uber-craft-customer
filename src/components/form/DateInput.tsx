@@ -28,6 +28,7 @@ interface DateInputProps<T extends FieldValues> extends BaseFieldProps<T> {
   classNameField?: string;
   format?: DateFormat;
   dateIcon?: boolean;
+  size?: "medium" | "small";
 }
 
 const DateInput = <T extends FieldValues>({
@@ -39,6 +40,7 @@ const DateInput = <T extends FieldValues>({
   format = "DD/MM/YYYY",
   label,
   dateIcon = true,
+  size = "medium",
 }: DateInputProps<T>) => {
   const [open, setOpen] = useState(false);
 
@@ -58,7 +60,7 @@ const DateInput = <T extends FieldValues>({
         slotProps={{
           textField: {
             fullWidth: true,
-            size: "small",
+            size: size,
             error: !!fieldState.error,
             helperText: fieldState.error?.message,
             inputProps: { readOnly: true },

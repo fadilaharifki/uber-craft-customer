@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { ReactNode } from "react";
 import { Controller, Control, FieldValues, Path } from "react-hook-form";
 import { InputLabel, SxProps, TextFieldProps } from "@mui/material";
 import clsx from "clsx";
@@ -14,7 +14,7 @@ import PhoneNumberInput from "./PhoneNumberInput";
 interface CustomFormFieldProps<T extends FieldValues> {
   name: Path<T>;
   control: Control<T>;
-  label: string;
+  label: string | (() => ReactNode);
   labelRequired?: boolean;
   type?:
     | "text"
@@ -37,6 +37,7 @@ interface CustomFormFieldProps<T extends FieldValues> {
   slotPropsInput?: TextFieldProps["slotProps"];
   dateFormat?: DateFormat;
   dateIcon?: boolean;
+  isHeighLable?: boolean;
 }
 
 const CustomFormField = <T extends FieldValues>({
@@ -56,6 +57,7 @@ const CustomFormField = <T extends FieldValues>({
   slotPropsInput,
   dateFormat,
   dateIcon,
+  isHeighLable,
 }: CustomFormFieldProps<T>) => {
   return (
     <Controller
@@ -74,7 +76,15 @@ const CustomFormField = <T extends FieldValues>({
               className="font-medium mb-1"
               sx={{ fontWeight: 500, marginBottom: 0.5 }}
             >
-              {label}
+              {label ? (
+                typeof label === "function" ? (
+                  label()
+                ) : (
+                  label
+                )
+              ) : (
+                <>{isHeighLable && <div className="h-6"></div>}</>
+              )}
               {labelRequired && <span className="text-red-500"> *</span>}
             </InputLabel>
           )}
@@ -89,7 +99,7 @@ const CustomFormField = <T extends FieldValues>({
               prefix={prefix}
               classNameField={classNameField}
               slotPropsInput={slotPropsInput}
-              label={!labelOutside ? label : ""}
+              label={label === "string" && !labelOutside ? label : ""}
             />
           ) : type === "phone_number" ? (
             <PhoneNumberInput
@@ -100,7 +110,7 @@ const CustomFormField = <T extends FieldValues>({
               sx={sx}
               classNameField={classNameField}
               slotPropsInput={slotPropsInput}
-              label={!labelOutside ? label : ""}
+              label={label === "string" && !labelOutside ? label : ""}
             />
           ) : type === "select" ? (
             <SelectInput
@@ -112,7 +122,7 @@ const CustomFormField = <T extends FieldValues>({
               sx={sx}
               slotPropsInput={slotPropsInput}
               classNameField={classNameField}
-              label={!labelOutside ? label : ""}
+              label={label === "string" && !labelOutside ? label : ""}
             />
           ) : type === "date" ? (
             <DateInput
@@ -121,7 +131,7 @@ const CustomFormField = <T extends FieldValues>({
               fieldState={fieldState}
               sx={sx}
               classNameField={classNameField}
-              label={!labelOutside ? label : ""}
+              label={label === "string" && !labelOutside ? label : ""}
               dateIcon={dateIcon}
             />
           ) : type === "avatar" ? (
@@ -141,7 +151,7 @@ const CustomFormField = <T extends FieldValues>({
               sx={sx}
               classNameField={classNameField}
               slotPropsInput={slotPropsInput}
-              label={!labelOutside ? label : ""}
+              label={label === "string" && !labelOutside ? label : ""}
             />
           )}
         </div>

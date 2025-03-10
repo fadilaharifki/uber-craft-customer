@@ -3,6 +3,7 @@
 import LayoutComponent from "@/components/Layout";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import useToast from "@/hooks/useToast";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -18,6 +19,7 @@ const aircraftOptions = [
 ];
 
 const HomePageModules = () => {
+  const router = useRouter();
   const { showToast } = useToast();
 
   const [selectedOption, setSelectedOption] = useState(aircraftOptions[0]);
@@ -210,8 +212,10 @@ const HomePageModules = () => {
                   if (option.name !== "Private Jet") {
                     showToast("Under Development", "info");
                   } else {
-                    setSelectedOption(option);
+                    router.push("/order");
                   }
+
+                  setSelectedOption(option);
                 }}
               >
                 {option.name}
