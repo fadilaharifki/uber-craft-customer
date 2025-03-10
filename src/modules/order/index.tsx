@@ -25,8 +25,12 @@ import {
 } from "@mui/icons-material";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import { airports, tabs } from "./dummy";
-import MapComponent from "@/components/Maps";
 import useScreenSize from "@/hooks/useScreenSize";
+import dynamic from "next/dynamic";
+
+const MapComponent = dynamic(() => import("@/components/Maps"), {
+  ssr: false,
+});
 
 const formSchema = z.object({
   flights: z.array(
@@ -136,7 +140,9 @@ const OrderPageModules = () => {
 
   return (
     <LayoutComponent>
-      <Box>{/* <MapComponent zoom={zoom} coordinates={coordinates} /> */}</Box>
+      <Box>
+        <MapComponent zoom={zoom} coordinates={coordinates} />
+      </Box>
 
       {/* UI Form */}
       <div className="absolute flex gap-5 flex-col px-4 md:px-10 w-screen -mt-40 justify-center items-center z-[1000]">

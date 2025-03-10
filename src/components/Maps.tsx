@@ -44,9 +44,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
     (coord) => !(coord.lat === 0 && coord.lng === 0)
   );
 
-  console.log(coordinates);
-  console.log(validCoordinates, "validCoordinates");
-
   const airportIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
     iconSize: [25, 41],
