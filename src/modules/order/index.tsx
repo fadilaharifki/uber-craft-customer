@@ -1,194 +1,331 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import LayoutComponent from "@/components/Layout";
-import { Box, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import "leaflet/dist/leaflet.css";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import CustomFormField from "@/components/form/CustomFormField";
-import { FlightLandRounded, FlightTakeoffRounded } from "@mui/icons-material";
+import {
+  CloseRounded,
+  FlightLandRounded,
+  FlightTakeoffRounded,
+  GroupRounded,
+} from "@mui/icons-material";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
-import { airports } from "./dummy";
+import { airports, tabs } from "./dummy";
 import MapComponent from "@/components/Maps";
+import useScreenSize from "@/hooks/useScreenSize";
 
 const formSchema = z.object({
-  departure: z.string().min(1, "Departure cannot be empty"),
-  arrival: z.string().min(1, "Arrival cannot be empty"),
-  date_flight: z.string().min(1, "Date cannot be empty"),
-  passengers: z.string().min(1, "Passengers cannot be empty"),
+  flights: z.array(
+    z.object({
+      departure: z.string().min(1, "Departure cannot be empty"),
+      arrival: z.string().min(1, "Arrival cannot be empty"),
+      flight_date: z.string().min(1, "Date cannot be empty"),
+      return_date: z.string().min(1, "Date cannot be empty"),
+      passengers: z.string().min(1, "Passengers cannot be empty"),
+    })
+  ),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 const OrderPageModules = () => {
+  const R = 6371;
+  const { breakpoint } = useScreenSize();
   const [activeTab, setActiveTab] = useState(0);
-  const [zoom, setZoom] = useState(10);
-  const [initialDeparture, setInitialDeparture] = useState({
-    lng: 106.6559,
-    lat: -6.1256,
-  });
+  const [zoom, setZoom] = useState(12);
 
-  const [initialArrival, setInitialArrival] = useState({ lng: 0, lat: 0 });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { handleSubmit, control, watch } = useForm<FormValues>({
+  const { control, watch, setValue } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      departure: "",
-      arrival: "",
-      date_flight: "",
-      passengers: "",
+      flights: [
+        {
+          departure: "",
+          arrival: "",
+          flight_date: "",
+          passengers: "",
+          return_date: "",
+        },
+      ],
     },
   });
 
-  const departureValue = watch("departure");
-  const arrivalValue = watch("arrival");
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "flights",
+  });
+
+  const flights = watch("flights");
+
+  const [coordinates, setCoordinates] = useState<
+    Array<{ lat: number; lng: number }>
+  >([]);
 
   useEffect(() => {
-    const depAirport = airports.find((e) => e.value === departureValue);
-    const arrAirport = airports.find((e) => e.value === arrivalValue);
+    const newCoordinates = flights
+      .map((flight) => {
+        const depAirport = airports.find((e) => e.value === flight.departure);
+        const arrAirport = airports.find((e) => e.value === flight.arrival);
+        return [
+          depAirport
+            ? { lat: depAirport.latitude, lng: depAirport.longitude }
+            : null,
+          arrAirport
+            ? { lat: arrAirport.latitude, lng: arrAirport.longitude }
+            : null,
+        ];
+      })
+      .flat()
+      .filter(
+        (coord) => coord !== null && coord.lat !== 0 && coord.lng !== 0
+      ) as { lat: number; lng: number }[];
 
-    if (depAirport && arrAirport) {
-      const latDiff = depAirport.latitude - arrAirport.latitude;
-      const lngDiff = depAirport.longitude - arrAirport.longitude;
-      const distance = Math.sqrt(latDiff ** 2 + lngDiff ** 2);
+    if (newCoordinates.length >= 2) {
+      let maxDistance = 0;
 
-      const calculatedZoom = Math.min(
-        10,
-        Math.max(5, 8 - Math.log2(distance + 0.01))
+      // Hitung jarak terbesar di antara semua titik (bounding box)
+      for (let i = 0; i < newCoordinates.length; i++) {
+        for (let j = i + 1; j < newCoordinates.length; j++) {
+          const dep = newCoordinates[i];
+          const arr = newCoordinates[j];
+
+          const lat1 = (dep.lat * Math.PI) / 180;
+          const lat2 = (arr.lat * Math.PI) / 180;
+          const dLat = ((arr.lat - dep.lat) * Math.PI) / 180;
+          const dLng = ((arr.lng - dep.lng) * Math.PI) / 180;
+
+          // Haversine formula
+          const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1) *
+              Math.cos(lat2) *
+              Math.sin(dLng / 2) *
+              Math.sin(dLng / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          const distance = R * c; // Jarak dalam km
+
+          maxDistance = Math.max(maxDistance, distance);
+        }
+      }
+
+      // Menyesuaikan zoom berdasarkan maxDistance
+      const calculatedZoom = Math.max(
+        1,
+        Math.min(10, 10 - Math.log2(maxDistance / 50 + 1))
       );
 
       setZoom(calculatedZoom);
-      setInitialDeparture({
-        lng: depAirport.longitude,
-        lat: depAirport.latitude,
-      });
-      setInitialArrival({
-        lng: arrAirport.longitude,
-        lat: arrAirport.latitude,
-      });
-    } else {
-      setInitialDeparture({ lng: 106.6559, lat: -6.1256 });
-      setInitialArrival({ lng: 0, lat: 0 });
     }
-  }, [departureValue, arrivalValue]);
+
+    setCoordinates(newCoordinates);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(flights)]);
 
   return (
     <LayoutComponent>
-      <Box>
-        <MapComponent
-          zoom={zoom}
-          coordinates={[initialDeparture, initialArrival]}
-        />
-      </Box>
+      <Box>{/* <MapComponent zoom={zoom} coordinates={coordinates} /> */}</Box>
 
       {/* UI Form */}
-      <div className="absolute flex gap-5 flex-col px-10 w-screen -mt-40 justify-center items-center z-[1000]">
-        <section className="flex justify-evenly bg-white shadow-2xl rounded-lg w-2/3 p-1 border border-gray-200 overflow-hidden">
-          {["Single Flight", "Round Flight", "Multiple Destinations"].map(
-            (label, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2 cursor-pointer"
-                onClick={() => setActiveTab(i)}
+      <div className="absolute flex gap-5 flex-col px-4 md:px-10 w-screen -mt-40 justify-center items-center z-[1000]">
+        <section className="flex justify-evenly bg-white shadow-2xl rounded-lg w-full md:w-2/3 p-2 border border-gray-200 overflow-hidden">
+          {tabs.map((e, i) => (
+            <div
+              key={i}
+              className={twMerge(
+                "flex justify-center items-center gap-2 cursor-pointer"
+              )}
+              onClick={() => {
+                setActiveTab(i);
+                if (i === 0 || i === 1) {
+                  setValue("flights", [
+                    {
+                      departure: flights[0].departure ?? "",
+                      arrival: flights[0].arrival ?? "",
+                      flight_date: flights[0].flight_date ?? "",
+                      passengers: flights[0].passengers ?? "",
+                      return_date: "",
+                    },
+                  ]);
+                }
+              }}
+            >
+              <Image
+                src={e.icon}
+                height={e.height}
+                width={e.widht}
+                alt={e.label}
+              />
+              <Typography
+                variant="button"
+                className={twMerge(
+                  i === activeTab && "text-blue-500 border-b-2 border-blue-500"
+                )}
               >
-                <Typography
-                  variant="button"
-                  className={twMerge(
-                    i === activeTab &&
-                      "text-blue-500 border-b-2 border-blue-500"
-                  )}
-                >
-                  {label}
-                </Typography>
-              </div>
-            )
-          )}
+                {breakpoint === "sm" ? e.label.split(" ")[0] : e.label}
+              </Typography>
+            </div>
+          ))}
         </section>
 
-        <section className="flex justify-evenly gap-5 w-full bg-white shadow-2xl rounded-xl border border-gray-200 overflow-hidden p-10">
-          <CustomFormField
-            name="departure"
-            control={control}
-            options={
-              airports.map((e) => {
-                return { label: e.label, value: e.value };
-              }) ?? []
-            }
-            label={() => {
-              return (
-                <div className="flex gap-2">
-                  <FlightTakeoffRounded className="text-black" />
-                  <p className="text-black font-medium">Departure</p>
+        <section className="flex flex-col justify-evenly gap-5 md:gap-1 w-full bg-white shadow-2xl rounded-xl border border-gray-200 overflow-hidden p-10">
+          {fields.map((field, index) => (
+            <div
+              key={field.id}
+              className="flex flex-col md:flex-row items-center gap-2 md:gap-5"
+            >
+              <CustomFormField
+                className="w-full"
+                name={`flights.${index}.departure`}
+                control={control}
+                options={airports.map((e) => ({
+                  label: e.label,
+                  value: e.value,
+                }))}
+                label={() => (
+                  <div className="flex gap-2">
+                    <FlightTakeoffRounded className="text-black" />
+                    <p className="text-black font-medium">Departure</p>
+                  </div>
+                )}
+                placeholder="Select departure"
+                size="medium"
+                type="select"
+              />
+              <div className="flex w-full md:w-auto justify-center items-center cursor-pointer">
+                <Image
+                  src={"/assets/svg/cycle.svg"}
+                  height={29}
+                  width={20}
+                  alt={"cycle icon"}
+                  className={
+                    "bg-[#f9f9f9] rounded-xl p-1 w-7 h-7 hover:bg-gray-200"
+                  }
+                />
+              </div>
+              <CustomFormField
+                className="w-full"
+                name={`flights.${index}.arrival`}
+                control={control}
+                options={airports.map((e) => ({
+                  label: e.label,
+                  value: e.value,
+                }))}
+                label={() => (
+                  <div className="flex gap-2">
+                    <FlightLandRounded className="text-black" />
+                    <p className="text-black font-medium">Arrival</p>
+                  </div>
+                )}
+                placeholder="Select arrival"
+                size="medium"
+                type="select"
+              />
+
+              <CustomFormField
+                className="w-full"
+                name={`flights.${index}.flight_date`}
+                control={control}
+                label={() => (
+                  <div className="flex gap-2">
+                    <CalendarMonthRoundedIcon className="text-black" />
+                    <p className="text-black font-medium">Flight Date</p>
+                  </div>
+                )}
+                placeholder="Select flight date"
+                size="medium"
+                type="date"
+              />
+              {activeTab === 1 && (
+                <CustomFormField
+                  className="w-full"
+                  name={`flights.${index}.return_date`}
+                  control={control}
+                  label={() => (
+                    <div className="flex gap-2">
+                      <CalendarMonthRoundedIcon className="text-black" />
+                      <p className="text-black font-medium">Flight Date</p>
+                    </div>
+                  )}
+                  placeholder="Select flight date"
+                  size="medium"
+                  type="date"
+                />
+              )}
+              <div className="w-full md:w-32">
+                <CustomFormField
+                  className="w-full"
+                  name={`flights.${index}.passengers`}
+                  control={control}
+                  label={() => (
+                    <div className="flex gap-2">
+                      <p className="text-black font-medium">Passengers</p>
+                    </div>
+                  )}
+                  labelRequired={false}
+                  placeholder="0"
+                  size="medium"
+                  type="number"
+                  slotPropsInput={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <GroupRounded htmlColor="#000000" />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </div>
+              {fields.length > 1 && (
+                <div>
+                  <IconButton
+                    sx={{
+                      color: "black",
+                    }}
+                    onClick={() => remove(index)}
+                  >
+                    <CloseRounded />
+                  </IconButton>
                 </div>
-              );
-            }}
-            labelRequired={false}
-            placeholder="Select departure"
-            size="medium"
-            type="select"
-          />
-          <div className="flex items-center cursor-pointer">
-            <Image
-              src={"/assets/svg/cycle.svg"}
-              height={29}
-              width={20}
-              alt={"cycle icon"}
-              className="bg-gray-100 rounded-xl p-1 w-7 h-7 hover:bg-gray-200"
-            />
-          </div>
-          <CustomFormField
-            name="arrival"
-            options={
-              airports.map((e) => {
-                return { label: e.label, value: e.value };
-              }) ?? []
-            }
-            control={control}
-            label={() => {
-              return (
-                <div className="flex gap-2">
-                  <FlightLandRounded className="text-black" />
-                  <p className="text-black font-medium">Arrival</p>
-                </div>
-              );
-            }}
-            labelRequired={false}
-            placeholder="Select arrival"
-            size="medium"
-            type="select"
-          />
-          <CustomFormField
-            name="date_flight"
-            control={control}
-            label={() => {
-              return (
-                <div className="flex gap-2">
-                  <CalendarMonthRoundedIcon className="text-black" />
-                  <p className="text-black font-medium">Flight Date</p>
-                </div>
-              );
-            }}
-            labelRequired={false}
-            placeholder="Select flight date"
-            size="medium"
-            type="date"
-          />
-          <CustomFormField
-            name="passengers"
-            control={control}
-            label=""
-            labelRequired={false}
-            isHeighLable
-            placeholder="Select flight date"
-            size="medium"
-            type="number"
-          />
+              )}
+            </div>
+          ))}
+
+          {activeTab === 2 ? (
+            <div>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderRadius: "999px",
+                }}
+                color="primary"
+                onClick={() =>
+                  append({
+                    departure: "",
+                    arrival: "",
+                    flight_date: "",
+                    passengers: "",
+                    return_date: "",
+                  })
+                }
+              >
+                Add Flight
+              </Button>
+            </div>
+          ) : null}
         </section>
       </div>
     </LayoutComponent>

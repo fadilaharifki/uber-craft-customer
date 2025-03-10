@@ -67,7 +67,7 @@ const CustomFormField = <T extends FieldValues>({
         <div
           className={clsx(
             "flex flex-col flex-1",
-            fieldState.error ? "mb-2" : "mb-7",
+            fieldState.error ? "mb-2" : "mb-2 md:mb-7",
             className
           )}
         >
@@ -99,7 +99,7 @@ const CustomFormField = <T extends FieldValues>({
               prefix={prefix}
               classNameField={classNameField}
               slotPropsInput={slotPropsInput}
-              label={label === "string" && !labelOutside ? label : ""}
+              label={typeof label === "string" && !labelOutside ? label : ""}
             />
           ) : type === "phone_number" ? (
             <PhoneNumberInput
@@ -110,7 +110,7 @@ const CustomFormField = <T extends FieldValues>({
               sx={sx}
               classNameField={classNameField}
               slotPropsInput={slotPropsInput}
-              label={label === "string" && !labelOutside ? label : ""}
+              label={typeof label === "string" && !labelOutside ? label : ""}
             />
           ) : type === "select" ? (
             <SelectInput
@@ -122,7 +122,7 @@ const CustomFormField = <T extends FieldValues>({
               sx={sx}
               slotPropsInput={slotPropsInput}
               classNameField={classNameField}
-              label={label === "string" && !labelOutside ? label : ""}
+              label={typeof label === "string" && !labelOutside ? label : ""}
             />
           ) : type === "date" ? (
             <DateInput
@@ -131,7 +131,7 @@ const CustomFormField = <T extends FieldValues>({
               fieldState={fieldState}
               sx={sx}
               classNameField={classNameField}
-              label={label === "string" && !labelOutside ? label : ""}
+              label={typeof label === "string" && !labelOutside ? label : ""}
               dateIcon={dateIcon}
             />
           ) : type === "avatar" ? (
@@ -151,7 +151,7 @@ const CustomFormField = <T extends FieldValues>({
               sx={sx}
               classNameField={classNameField}
               slotPropsInput={slotPropsInput}
-              label={label === "string" && !labelOutside ? label : ""}
+              label={typeof label === "string" && !labelOutside ? label : ""}
             />
           )}
         </div>

@@ -40,9 +40,12 @@ const MapComponent: React.FC<MapComponentProps> = ({
   coordinates,
   zoom = 10,
 }) => {
-  const validCoordinates = coordinates.filter(
+  const validCoordinates = coordinates?.filter(
     (coord) => !(coord.lat === 0 && coord.lng === 0)
   );
+
+  console.log(coordinates);
+  console.log(validCoordinates, "validCoordinates");
 
   const airportIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",

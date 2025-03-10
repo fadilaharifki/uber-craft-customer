@@ -1,10 +1,11 @@
 "use client";
 
-import { Autocomplete, TextField, TextFieldProps } from "@mui/material";
+import { Autocomplete, TextFieldProps } from "@mui/material";
 import { ExpandMoreRounded } from "@mui/icons-material";
 import { BaseFieldProps } from "@/interface/BaseInterface";
 import { FieldValues } from "react-hook-form";
 import clsx from "clsx";
+import { CustomTextField } from "./TextInput";
 
 interface SelectOption {
   label: string;
@@ -41,7 +42,7 @@ const SelectInput = <T extends FieldValues>({
     isOptionEqualToValue={(option, value) => option.value === value.value}
     getOptionLabel={(option) => option.label}
     renderInput={(params) => (
-      <TextField
+      <CustomTextField
         {...params}
         label={label}
         inputRef={params.InputProps.ref}
