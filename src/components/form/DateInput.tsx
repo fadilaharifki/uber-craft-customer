@@ -8,13 +8,12 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { InputAdornment, IconButton, styled } from "@mui/material";
+import { InputAdornment, IconButton } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import { BaseFieldProps } from "@/interface/BaseInterface";
 import { FieldValues } from "react-hook-form";
 import clsx from "clsx";
 import { useState } from "react";
-import theme from "@/theme";
 
 export type DateFormat =
   | "DD/MM/YYYY"
@@ -32,19 +31,6 @@ interface DateInputProps<T extends FieldValues> extends BaseFieldProps<T> {
   size?: "medium" | "small";
 }
 
-export const CustomTextFieldDate = styled(DatePicker)({
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "20px",
-    backgroundColor: theme.palette.customColor?.gray,
-  },
-  "& .MuiInput-underline:before": {
-    borderBottom: "2px solid black",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottom: "2px solid black",
-  },
-});
-
 const DateInput = <T extends FieldValues>({
   field,
   fieldState,
@@ -60,7 +46,7 @@ const DateInput = <T extends FieldValues>({
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <CustomTextFieldDate
+      <DatePicker
         label={label}
         {...field}
         className={clsx("w-full", classNameField)}

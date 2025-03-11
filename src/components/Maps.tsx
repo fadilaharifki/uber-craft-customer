@@ -29,6 +29,14 @@ const MapViewUpdater: React.FC<{ center: Coordinate; zoom: number }> = ({
 
   useEffect(() => {
     if (map) {
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 300);
+    }
+  }, [map]);
+
+  useEffect(() => {
+    if (map) {
       map.setView([center.lat, center.lng], zoom, { animate: true });
     }
   }, [center, zoom, map]);

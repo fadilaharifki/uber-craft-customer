@@ -2,14 +2,9 @@
 
 import React from "react";
 import { MuiTelInput } from "mui-tel-input";
-import {
-  InputProps as MuiInputProps,
-  styled,
-  TextFieldProps,
-} from "@mui/material";
+import { InputProps as MuiInputProps, TextFieldProps } from "@mui/material";
 import { BaseFieldProps } from "@/interface/BaseInterface";
 import { FieldValues } from "react-hook-form";
-import theme from "@/theme";
 
 interface PhoneNumberInputProps<T extends FieldValues = FieldValues>
   extends BaseFieldProps<T> {
@@ -17,19 +12,6 @@ interface PhoneNumberInputProps<T extends FieldValues = FieldValues>
   classNameField?: string;
   slotPropsInput?: TextFieldProps["slotProps"];
 }
-
-export const CustomTextFieldPhonNumber = styled(MuiTelInput)({
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "20px",
-    backgroundColor: theme.palette.customColor?.gray,
-  },
-  "& .MuiInput-underline:before": {
-    borderBottom: "21px solid black",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottom: "2px solid black",
-  },
-});
 
 const PhoneNumberInput = <T extends FieldValues>({
   field,
@@ -42,7 +24,7 @@ const PhoneNumberInput = <T extends FieldValues>({
   label = "Phone Number",
 }: PhoneNumberInputProps<T>) => {
   return (
-    <CustomTextFieldPhonNumber
+    <MuiTelInput
       {...field}
       label={label}
       className={classNameField}
@@ -51,6 +33,7 @@ const PhoneNumberInput = <T extends FieldValues>({
       size={size}
       value={field.value || ""}
       onChange={(newPhone) => field.onChange(newPhone)}
+      suppressHydrationWarning
       placeholder={placeholder}
       error={!!fieldState.error}
       helperText={fieldState.error?.message}

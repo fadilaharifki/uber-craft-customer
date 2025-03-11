@@ -4,7 +4,6 @@ import { BaseFieldProps } from "@/interface/BaseInterface";
 import {
   IconButton,
   InputAdornment,
-  styled,
   TextField,
   TextFieldProps,
 } from "@mui/material";
@@ -16,7 +15,6 @@ import {
 import clsx from "clsx";
 import { FieldValues } from "react-hook-form";
 import { useState } from "react";
-import theme from "@/theme";
 
 interface TextInputProps<T extends FieldValues = FieldValues>
   extends BaseFieldProps<T> {
@@ -25,19 +23,6 @@ interface TextInputProps<T extends FieldValues = FieldValues>
   slotPropsInput?: TextFieldProps["slotProps"];
   label?: string;
 }
-
-export const CustomTextField = styled(TextField)({
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "20px",
-    backgroundColor: theme.palette.customColor?.gray,
-  },
-  "& .MuiInput-underline:before": {
-    borderBottom: "2px solid black",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottom: "2px solid black",
-  },
-});
 
 const TextInput = <T extends FieldValues>({
   field,
@@ -55,7 +40,7 @@ const TextInput = <T extends FieldValues>({
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   return (
-    <CustomTextField
+    <TextField
       {...field}
       label={label}
       className={clsx("w-full", classNameField)}
@@ -65,6 +50,7 @@ const TextInput = <T extends FieldValues>({
       helperText={fieldState.error?.message}
       placeholder={placeholder}
       size={size}
+      suppressHydrationWarning
       sx={{ ...sx, borderRadius: 5 }}
       variant="outlined"
       slotProps={{

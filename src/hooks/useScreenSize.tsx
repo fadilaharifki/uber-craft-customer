@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 
 const getBreakpoint = (width: number) => {
@@ -11,10 +10,14 @@ const getBreakpoint = (width: number) => {
 };
 
 const useScreenSize = () => {
-  const [screenSize, setScreenSize] = useState({
+  const [screenSize, setScreenSize] = useState<{
+    width: number;
+    height: number;
+    breakpoint: null | string;
+  }>({
     width: 0,
     height: 0,
-    breakpoint: "sm",
+    breakpoint: null,
   });
 
   useEffect(() => {
@@ -26,15 +29,10 @@ const useScreenSize = () => {
       });
     };
 
-    // Set initial screen size
-    handleResize();
-
+    handleResize(); // Set nilai saat pertama kali mount
     window.addEventListener("resize", handleResize);
 
-    // Cleanup event listeners on component unmount
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return screenSize;

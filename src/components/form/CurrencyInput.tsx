@@ -33,6 +33,7 @@ const CurrencyInput = <T extends FieldValues>({
 }: CurrencyInputProps<T>) => (
   <NumericFormat
     label={label}
+    suppressHydrationWarning
     className={clsx(classNameField)}
     value={field.value}
     onValueChange={(values) => field.onChange(values.value)}

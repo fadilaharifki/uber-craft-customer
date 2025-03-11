@@ -25,18 +25,21 @@ export const tabs = [
   {
     icon: "/assets/svg/single-flight.svg",
     label: "Single Flight",
+    labelMobile: "Single",
     height: 20,
     widht: 20,
   },
   {
     icon: "/assets/svg/round-flight.svg",
     label: "Round Flight",
+    labelMobile: "Round",
     height: 30,
     widht: 30,
   },
   {
     icon: "/assets/svg/multiple-destination.svg",
     label: "Multiple Destinations",
+    labelMobile: "Multiple",
     height: 30,
     widht: 30,
   },

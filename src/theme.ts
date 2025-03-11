@@ -16,6 +16,18 @@ declare module "@mui/material/styles" {
 }
 
 const theme = createTheme({
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            borderRadius: "15px",
+            backgroundColor: "#f9f9f9",
+          },
+        },
+      },
+    },
+  },
   typography: {
     fontFamily: "var(--font-roboto)",
   },

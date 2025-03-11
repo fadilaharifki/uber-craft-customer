@@ -1,14 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import LayoutComponent from "@/components/Layout";
-import {
-  Box,
-  Button,
-  IconButton,
-  InputAdornment,
-  Typography,
-} from "@mui/material";
+import { Button, IconButton, InputAdornment, Typography } from "@mui/material";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
@@ -18,7 +11,7 @@ import { z } from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import CustomFormField from "@/components/form/CustomFormField";
 import {
-  CloseRounded,
+  DeleteRounded,
   FlightLandRounded,
   FlightTakeoffRounded,
   GroupRounded,
@@ -27,6 +20,7 @@ import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import { airports, tabs } from "./dummy";
 import useScreenSize from "@/hooks/useScreenSize";
 import dynamic from "next/dynamic";
+import SwipeableEdgeDrawer from "@/components/SwipeableEdgeDrawer";
 
 const MapComponent = dynamic(() => import("@/components/Maps"), {
   ssr: false,
@@ -49,8 +43,16 @@ type FormValues = z.infer<typeof formSchema>;
 const OrderPageModules = () => {
   const R = 6371;
   const { breakpoint } = useScreenSize();
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    setHeight(window.innerHeight);
+  }, []);
+
   const [activeTab, setActiveTab] = useState(0);
   const [zoom, setZoom] = useState(12);
+
+  const [open, setOpen] = useState(false);
 
   const { control, watch, setValue } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -139,13 +141,12 @@ const OrderPageModules = () => {
   }, [JSON.stringify(flights)]);
 
   return (
-    <LayoutComponent>
-      <Box>
-        <MapComponent zoom={zoom} coordinates={coordinates} />
-      </Box>
+    <LayoutComponent classNameChildren="max-h-screen">
+      <MapComponent zoom={zoom} coordinates={coordinates} />
 
       {/* UI Form */}
-      <div className="absolute flex gap-5 flex-col px-4 md:px-10 w-screen -mt-40 justify-center items-center z-[1000]">
+
+      <div className="absolute flex gap-2 md:gap-5 flex-col px-2 md:px-10 pb-2 w-screen top-72 justify-center items-center z-[1000]">
         <section className="flex justify-evenly bg-white shadow-2xl rounded-lg w-full md:w-2/3 p-2 border border-gray-200 overflow-hidden">
           {tabs.map((e, i) => (
             <div
@@ -175,18 +176,24 @@ const OrderPageModules = () => {
                 alt={e.label}
               />
               <Typography
+                suppressHydrationWarning
                 variant="button"
                 className={twMerge(
                   i === activeTab && "text-blue-500 border-b-2 border-blue-500"
                 )}
               >
-                {breakpoint === "sm" ? e.label.split(" ")[0] : e.label}
+                {breakpoint === "sm" ? e.labelMobile : e.label}
               </Typography>
             </div>
           ))}
         </section>
 
-        <section className="flex flex-col justify-evenly gap-5 md:gap-1 w-full bg-white shadow-2xl rounded-xl border border-gray-200 overflow-hidden p-10">
+        <section
+          style={{
+            maxHeight: height - 380,
+          }}
+          className="flex overflow-auto flex-col justify-evenly gap-5 md:gap-1 w-full bg-white shadow-2xl rounded-xl border border-gray-200 p-6 md:p-10"
+        >
           {fields.map((field, index) => (
             <div
               key={field.id}
@@ -207,7 +214,7 @@ const OrderPageModules = () => {
                   </div>
                 )}
                 placeholder="Select departure"
-                size="medium"
+                size={breakpoint === "sm" ? "small" : "medium"}
                 type="select"
               />
               <div className="flex w-full md:w-auto justify-center items-center cursor-pointer">
@@ -236,7 +243,7 @@ const OrderPageModules = () => {
                   </div>
                 )}
                 placeholder="Select arrival"
-                size="medium"
+                size={breakpoint === "sm" ? "small" : "medium"}
                 type="select"
               />
 
@@ -251,7 +258,7 @@ const OrderPageModules = () => {
                   </div>
                 )}
                 placeholder="Select flight date"
-                size="medium"
+                size={breakpoint === "sm" ? "small" : "medium"}
                 type="date"
               />
               {activeTab === 1 && (
@@ -266,7 +273,7 @@ const OrderPageModules = () => {
                     </div>
                   )}
                   placeholder="Select flight date"
-                  size="medium"
+                  size={breakpoint === "sm" ? "small" : "medium"}
                   type="date"
                 />
               )}
@@ -282,7 +289,7 @@ const OrderPageModules = () => {
                   )}
                   labelRequired={false}
                   placeholder="0"
-                  size="medium"
+                  size={breakpoint === "sm" ? "small" : "medium"}
                   type="number"
                   slotPropsInput={{
                     input: {
@@ -303,37 +310,53 @@ const OrderPageModules = () => {
                     }}
                     onClick={() => remove(index)}
                   >
-                    <CloseRounded />
+                    <DeleteRounded color="error" />
                   </IconButton>
                 </div>
               )}
             </div>
           ))}
 
-          {activeTab === 2 ? (
-            <div>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderRadius: "999px",
-                }}
-                color="primary"
-                onClick={() =>
-                  append({
-                    departure: "",
-                    arrival: "",
-                    flight_date: "",
-                    passengers: "",
-                    return_date: "",
-                  })
-                }
-              >
-                Add Flight
-              </Button>
-            </div>
-          ) : null}
+          <div className="flex justify-between">
+            {activeTab === 2 ? (
+              <div>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "999px",
+                  }}
+                  color="primary"
+                  onClick={() =>
+                    append({
+                      departure: "",
+                      arrival: "",
+                      flight_date: "",
+                      passengers: "",
+                      return_date: "",
+                    })
+                  }
+                >
+                  Add Flight
+                </Button>
+              </div>
+            ) : null}
+            <Button
+              onClick={() => {
+                setOpen(true);
+              }}
+              variant="contained"
+              color="primary"
+              sx={{ borderRadius: "999px" }}
+            >
+              Find My Flight
+            </Button>
+          </div>
         </section>
       </div>
+
+      <SwipeableEdgeDrawer open={open} setOpen={setOpen}>
+        as
+      </SwipeableEdgeDrawer>
     </LayoutComponent>
   );
 };

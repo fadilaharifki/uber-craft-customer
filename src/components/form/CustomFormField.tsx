@@ -132,6 +132,7 @@ const CustomFormField = <T extends FieldValues>({
               sx={sx}
               classNameField={classNameField}
               label={typeof label === "string" && !labelOutside ? label : ""}
+              size={size}
               dateIcon={dateIcon}
             />
           ) : type === "avatar" ? (

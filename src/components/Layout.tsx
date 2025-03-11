@@ -4,13 +4,17 @@ import { Box } from "@mui/material";
 
 interface LayoutComponentProps {
   children: ReactNode;
+  classNameChildren?: string;
 }
 
-const LayoutComponent = ({ children }: LayoutComponentProps) => {
+const LayoutComponent = ({
+  children,
+  classNameChildren,
+}: LayoutComponentProps) => {
   return (
     <Box>
       <Navbar />
-      {children}
+      <div className={classNameChildren}>{children}</div>
     </Box>
   );
 };
