@@ -11,16 +11,18 @@ import { z } from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import CustomFormField from "@/components/form/CustomFormField";
 import {
+  AddRounded,
   DeleteRounded,
   FlightLandRounded,
   FlightTakeoffRounded,
   GroupRounded,
 } from "@mui/icons-material";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
-import { airports, tabs } from "./dummy";
+import { airports, dataPrivateJet, tabs } from "./dummy";
 import useScreenSize from "@/hooks/useScreenSize";
 import dynamic from "next/dynamic";
 import SwipeableEdgeDrawer from "@/components/SwipeableEdgeDrawer";
+import CardComponent from "@/components/Card";
 
 const MapComponent = dynamic(() => import("@/components/Maps"), {
   ssr: false,
@@ -43,6 +45,7 @@ type FormValues = z.infer<typeof formSchema>;
 const OrderPageModules = () => {
   const R = 6371;
   const { breakpoint } = useScreenSize();
+  const isMobile = breakpoint === "sm";
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
@@ -146,7 +149,7 @@ const OrderPageModules = () => {
 
       {/* UI Form */}
 
-      <div className="absolute flex gap-2 md:gap-5 flex-col px-2 md:px-10 pb-2 w-screen top-72 justify-center items-center z-[1000]">
+      <div className="absolute flex gap-2 md:gap-5 flex-col px-2 md:px-10 pb-2 w-screen top-52 md:top-72 justify-center items-center z-[1000]">
         <section className="flex justify-evenly bg-white shadow-2xl rounded-lg w-full md:w-2/3 p-2 border border-gray-200 overflow-hidden">
           {tabs.map((e, i) => (
             <div
@@ -182,7 +185,7 @@ const OrderPageModules = () => {
                   i === activeTab && "text-blue-500 border-b-2 border-blue-500"
                 )}
               >
-                {breakpoint === "sm" ? e.labelMobile : e.label}
+                {isMobile ? e.labelMobile : e.label}
               </Typography>
             </div>
           ))}
@@ -190,81 +193,69 @@ const OrderPageModules = () => {
 
         <section
           style={{
-            maxHeight: height - 380,
+            maxHeight: isMobile ? height - 280 : height - 380,
           }}
           className="flex overflow-auto flex-col justify-evenly gap-5 md:gap-1 w-full bg-white shadow-2xl rounded-xl border border-gray-200 p-6 md:p-10"
         >
           {fields.map((field, index) => (
-            <div
-              key={field.id}
-              className="flex flex-col md:flex-row items-center gap-2 md:gap-5"
-            >
-              <CustomFormField
-                className="w-full"
-                name={`flights.${index}.departure`}
-                control={control}
-                options={airports.map((e) => ({
-                  label: e.label,
-                  value: e.value,
-                }))}
-                label={() => (
-                  <div className="flex gap-2">
-                    <FlightTakeoffRounded className="text-black" />
-                    <p className="text-black font-medium">Departure</p>
-                  </div>
-                )}
-                placeholder="Select departure"
-                size={breakpoint === "sm" ? "small" : "medium"}
-                type="select"
-              />
-              <div className="flex w-full md:w-auto justify-center items-center cursor-pointer">
-                <Image
-                  src={"/assets/svg/cycle.svg"}
-                  height={29}
-                  width={20}
-                  alt={"cycle icon"}
-                  className={
-                    "bg-[#f9f9f9] rounded-xl p-1 w-7 h-7 hover:bg-gray-200"
-                  }
-                />
-              </div>
-              <CustomFormField
-                className="w-full"
-                name={`flights.${index}.arrival`}
-                control={control}
-                options={airports.map((e) => ({
-                  label: e.label,
-                  value: e.value,
-                }))}
-                label={() => (
-                  <div className="flex gap-2">
-                    <FlightLandRounded className="text-black" />
-                    <p className="text-black font-medium">Arrival</p>
-                  </div>
-                )}
-                placeholder="Select arrival"
-                size={breakpoint === "sm" ? "small" : "medium"}
-                type="select"
-              />
-
-              <CustomFormField
-                className="w-full"
-                name={`flights.${index}.flight_date`}
-                control={control}
-                label={() => (
-                  <div className="flex gap-2">
-                    <CalendarMonthRoundedIcon className="text-black" />
-                    <p className="text-black font-medium">Flight Date</p>
-                  </div>
-                )}
-                placeholder="Select flight date"
-                size={breakpoint === "sm" ? "small" : "medium"}
-                type="date"
-              />
-              {activeTab === 1 && (
+            <div key={field.id} className="flex flex-col gap-2 md:gap-5">
+              {activeTab === 2 && (
+                <Typography sx={{ fontWeight: "600" }}>
+                  Trip {index + 1}
+                </Typography>
+              )}
+              <div className="flex flex-col md:flex-row items-center gap-2 md:gap-5">
                 <CustomFormField
                   className="w-full"
-                  name={`flights.${index}.return_date`}
+                  name={`flights.${index}.departure`}
+                  control={control}
+                  options={airports.map((e) => ({
+                    label: e.label,
+                    value: e.value,
+                  }))}
+                  label={() => (
+                    <div className="flex gap-2">
+                      <FlightTakeoffRounded className="text-black" />
+                      <p className="text-black font-medium">Departure</p>
+                    </div>
+                  )}
+                  placeholder="Select departure"
+                  size={isMobile ? "small" : "medium"}
+                  type="select"
+                />
+                <div className="flex w-full md:w-auto justify-center items-center cursor-pointer">
+                  <Image
+                    src={"/assets/svg/cycle.svg"}
+                    height={29}
+                    width={20}
+                    alt={"cycle icon"}
+                    className={
+                      "bg-[#f9f9f9] rounded-xl p-1 w-7 h-7 hover:bg-gray-200"
+                    }
+                  />
+                </div>
+                <CustomFormField
+                  className="w-full"
+                  name={`flights.${index}.arrival`}
+                  control={control}
+                  options={airports.map((e) => ({
+                    label: e.label,
+                    value: e.value,
+                  }))}
+                  label={() => (
+                    <div className="flex gap-2">
+                      <FlightLandRounded className="text-black" />
+                      <p className="text-black font-medium">Arrival</p>
+                    </div>
+                  )}
+                  placeholder="Select arrival"
+                  size={isMobile ? "small" : "medium"}
+                  type="select"
+                />
+
+                <CustomFormField
+                  className="w-full"
+                  name={`flights.${index}.flight_date`}
                   control={control}
                   label={() => (
                     <div className="flex gap-2">
@@ -273,47 +264,63 @@ const OrderPageModules = () => {
                     </div>
                   )}
                   placeholder="Select flight date"
-                  size={breakpoint === "sm" ? "small" : "medium"}
+                  size={isMobile ? "small" : "medium"}
                   type="date"
                 />
-              )}
-              <div className="w-full md:w-32">
-                <CustomFormField
-                  className="w-full"
-                  name={`flights.${index}.passengers`}
-                  control={control}
-                  label={() => (
-                    <div className="flex gap-2">
-                      <p className="text-black font-medium">Passengers</p>
-                    </div>
-                  )}
-                  labelRequired={false}
-                  placeholder="0"
-                  size={breakpoint === "sm" ? "small" : "medium"}
-                  type="number"
-                  slotPropsInput={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <GroupRounded htmlColor="#000000" />
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-              </div>
-              {fields.length > 1 && (
-                <div>
-                  <IconButton
-                    sx={{
-                      color: "black",
+                {activeTab === 1 && (
+                  <CustomFormField
+                    className="w-full"
+                    name={`flights.${index}.return_date`}
+                    control={control}
+                    label={() => (
+                      <div className="flex gap-2">
+                        <CalendarMonthRoundedIcon className="text-black" />
+                        <p className="text-black font-medium">Flight Date</p>
+                      </div>
+                    )}
+                    placeholder="Select flight date"
+                    size={isMobile ? "small" : "medium"}
+                    type="date"
+                  />
+                )}
+                <div className="w-full md:w-32">
+                  <CustomFormField
+                    className="w-full"
+                    name={`flights.${index}.passengers`}
+                    control={control}
+                    label={() => (
+                      <div className="flex gap-2">
+                        <p className="text-black font-medium">Passengers</p>
+                      </div>
+                    )}
+                    labelRequired={false}
+                    placeholder="0"
+                    size={isMobile ? "small" : "medium"}
+                    type="number"
+                    slotPropsInput={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <GroupRounded htmlColor="#000000" />
+                          </InputAdornment>
+                        ),
+                      },
                     }}
-                    onClick={() => remove(index)}
-                  >
-                    <DeleteRounded color="error" />
-                  </IconButton>
+                  />
                 </div>
-              )}
+                {fields.length > 1 && (
+                  <div>
+                    <IconButton
+                      sx={{
+                        color: "black",
+                      }}
+                      onClick={() => remove(index)}
+                    >
+                      <DeleteRounded color="error" />
+                    </IconButton>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
 
@@ -336,7 +343,7 @@ const OrderPageModules = () => {
                     })
                   }
                 >
-                  Add Flight
+                  <AddRounded /> Add Trip
                 </Button>
               </div>
             ) : null}
@@ -355,7 +362,11 @@ const OrderPageModules = () => {
       </div>
 
       <SwipeableEdgeDrawer open={open} setOpen={setOpen}>
-        as
+        <div className="h-[70vh] flex flex-wrap justify-center p-2 md:p-10 gap-5 overflow-auto">
+          {dataPrivateJet.map((e, i) => {
+            return <CardComponent key={i} data={e} />;
+          })}
+        </div>
       </SwipeableEdgeDrawer>
     </LayoutComponent>
   );

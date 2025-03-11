@@ -196,7 +196,7 @@ const HomePageModules = () => {
               <button
                 key={option.name}
                 className={twMerge(
-                  "absolute text-white w-12 md:w-32 text-center break-words transform -translate-x-1/2 -translate-y-1/2 transition-all",
+                  "absolute text-white w-16 md:w-32 text-center transform -translate-x-1/2 -translate-y-1/2 transition-all",
                   "text-sm md:text-lg lg:text-xl font-semibold",
                   selectedOption.name === option.name
                     ? "font-bold scale-110"
@@ -207,8 +207,6 @@ const HomePageModules = () => {
                   top: `calc(50% + ${y}px)`,
                 }}
                 onClick={() => {
-                  console.log(option.name !== "Private Jet");
-
                   if (option.name !== "Private Jet") {
                     showToast("Under Development", "info");
                   } else {

@@ -10,6 +10,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import useScreenSize from "@/hooks/useScreenSize";
 
 type Coordinate = {
   lat: number;
@@ -48,6 +49,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
   coordinates,
   zoom = 10,
 }) => {
+  const { breakpoint } = useScreenSize();
+  const isMobile = breakpoint === "sm";
+  const height = isMobile ? "300px" : "500px";
+
   const validCoordinates = coordinates?.filter(
     (coord) => !(coord.lat === 0 && coord.lng === 0)
   );
@@ -66,10 +71,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
   return (
     <MapContainer
+      key={height}
       center={center}
       zoom={zoom}
       scrollWheelZoom={true}
-      style={{ width: "100%", height: "500px" }}
+      style={{ width: "100%", height }}
     >
       <MapViewUpdater center={center} zoom={zoom} />
       <TileLayer url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" />
